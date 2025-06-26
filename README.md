@@ -13,16 +13,14 @@ Technical details and evaluation results are provided in our paper:
 
 
 ## Table of Contents
-- [MolPIF](#molpif)
-  - [Table of Contents](#table-of-contents)
-  - [Installation](#installation)
-  - [Prepare Dataset](#prepare-dataset)
-  - [Model weights](#model-weights)
-  - [Training](#training)
-  - [Inference](#inference)
-  - [Evaluation](#evaluation)
-  - [License](#license)
-  - [Citation](#citation)
+1. [Installation](#Installation)
+2. [Prepare Dataset](#Prepare-Dataset)
+3. [Model weights](#Model-weights)
+4. [Training](#Training)
+5. [Inference](#Inference)
+6. [Evaluation](#Evaluation)
+7. [License](#License)
+8. [Citation](#Citation)
 
 
 ## Installation
