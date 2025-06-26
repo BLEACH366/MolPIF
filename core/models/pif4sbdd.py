@@ -402,15 +402,13 @@ class PIF4SBDDScoreModel(BFNBase):
 
         K = self.num_classes
 
-        # TODO test
-        if self.pos_init_mode == 'zero':
-            mu_pos_t = torch.zeros((n_nodes, 3)).to(
-                self.device
-            )  # [N, 3] coordinates prior N(0, 1)
-        elif self.pos_init_mode == 'randn':
-            mu_pos_t = torch.randn((n_nodes, 3)).to(self.device)
+        ### prior for x ###
+        mu_pos_t = torch.randn((n_nodes, 3)).to(self.device)
 
+        # laplace_dist = torch.distributions.Laplace(torch.tensor(0.0), torch.tensor(1.0))  # laplace prior
+        # mu_pos_t = laplace_dist.sample((n_nodes, 3)).to(self.device)
 
+        ### prior for h ###
         a_dirichlet = torch.ones((n_nodes, K)) / K
         dirichlet_dist = torch.distributions.Dirichlet(a_dirichlet)
         theta_h_t = dirichlet_dist.sample().to(self.device)

@@ -103,7 +103,11 @@ class BFNBase(nn.Module):
         
         x_flow = [gamma * x, (1 - gamma) * prior[1]]  # flow
 
+
         mu = x_flow[0] + torch.sqrt(x_flow[1]) * torch.randn_like(x).to(x.device)  # std = sqrt(1 - gamma**2)
+
+        # laplace_dist = torch.distributions.Laplace(x_flow[0], x_flow[1])  # laplace prior
+        # mu = laplace_dist.sample().to(self.device)
 
         return mu
 
@@ -198,6 +202,13 @@ class BFNBase(nn.Module):
             loss = scatter_mean(
                 weight.view(-1) * ((x_pred - x) ** 2).sum(-1), segment_ids, dim=0
             )
+
+
+        # b = 1 - gamma  # laplace prior
+        # if segment_ids is not None:
+        #     loss = scatter_mean(
+        #         np.sqrt(N) * (torch.exp(-torch.abs(x_pred - x)/b) + torch.abs(x_pred - x)/b).sum(-1), segment_ids, dim=0
+        #     )
 
         return loss
 

@@ -210,7 +210,7 @@ if __name__ == "__main__":
         "--time_emb_mode", type=str, default="simple", choices=["simple", "sin", 'rbf', 'rbfnn']
     )
     parser.add_argument("--time_emb_dim", type=int, default=1)
-    parser.add_argument('--pos_init_mode', type=str, default='randn', choices=['zero', 'randn'])
+    parser.add_argument('--pos_init_mode', type=str, default='randn', choices=['zero', 'randn'])  # not used
 
     # eval params
     parser.add_argument('--ckpt_path', type=str, default='best', help='path to the checkpoint')
