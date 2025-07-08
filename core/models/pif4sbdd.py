@@ -519,4 +519,14 @@ class PIF4SBDDScoreModel(BFNBase):
         theta_traj.append((mu_pos_final, p0_h_final))
 
 
+        # pos_tmp = []
+        # h_tmp = []
+        # for idx,i in enumerate(theta_traj):
+        #     if idx != 0:
+        #         pos_tmp += [i[0][:33]]
+        #         h_tmp += [i[1][:33]]
+        # tmp = (torch.concat(pos_tmp, dim=0), torch.concat(h_tmp, dim=0))
+        # print(theta_traj[-1][0].shape, theta_traj[-1][1].shape, tmp[0].shape, tmp[1].shape)
+        # theta_traj[-1] = tmp
+
         return theta_traj

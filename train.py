@@ -346,7 +346,7 @@ if __name__ == "__main__":
         trainer.test(model, dataloaders=test_loader, ckpt_path=cfg.evaluation.ckpt_path)
 
     else:
-        # cfg.evaluation.ckpt_path = '/data1/jinyaowei/MolCRAFT2/logs/interpolation_para_randn_flow_uni_fulltype_geo_0009_noEMA2_pf/checkpoints/epoch12-val_loss12.04-mol_stable0.98-complete0.95-vina_score-7.27.ckpt'
+        # cfg.evaluation.ckpt_path = '/data1/jinyaowei/MolPIF/logs/h_dim_192/checkpoints/epoch11-val_loss12.36-mol_stable0.99-complete0.97-vina_scorenan.ckpt'
 
         trainer.test(model, dataloaders=test_loader, ckpt_path=cfg.evaluation.ckpt_path)
 

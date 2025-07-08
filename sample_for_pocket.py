@@ -278,14 +278,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # meta
-    parser.add_argument("--protein_path", type=str, default="./examples/6VO5/6VO5_protein.pdb")
-    parser.add_argument("--ligand_path", type=str, default="./examples/6VO5/6VO5_ligand.sdf")
-    parser.add_argument("--ckpt_path", type=str, default="./logs/interpolation_para_randn_flow_uni_fulltype_geo_0009_noEMA2_pf/checkpoints/epoch12-val_loss12.04-mol_stable0.98-complete0.95-vina_score-7.27.ckpt")
+    parser.add_argument("--protein_path", type=str, default="./examples/3ZCW/3ZCW_protein.pdb")
+    parser.add_argument("--ligand_path", type=str, default="./examples/3ZCW/3ZCW_ligand.sdf")
+    # parser.add_argument("--ckpt_path", type=str, default="./logs/interpolation_para_randn_flow_uni_fulltype_geo_0009_noEMA2_pf/checkpoints/epoch12-val_loss12.04-mol_stable0.98-complete0.95-vina_score-7.27.ckpt")
+    parser.add_argument("--ckpt_path", type=str, default="./logs/epoch30/checkpoints/epoch27-val_loss11.47-mol_stable0.99-complete0.96-vina_scorenan.ckpt")
     parser.add_argument("--num_samples", type=int, default=100)
     parser.add_argument("--sample_steps", type=int, default=100)
     parser.add_argument("--sample_num_atoms", type=str, default="ref")  # "ref", "prior"
-    parser.add_argument("--fix_index", type=int, nargs='+', default=None)
-    parser.add_argument("--out_fn", type=str, default="./examples/6VO5/output_test")
+    parser.add_argument("--fix_index", type=int, nargs='+', default=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22])
+    parser.add_argument("--out_fn", type=str, default="./examples/3ZCW/output_test_epoch30")
     parser.add_argument("--cfg_path", type=str, default=None)
 
     args = parser.parse_args()

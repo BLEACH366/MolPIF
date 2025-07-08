@@ -35,13 +35,13 @@ dynamics:
 
 
       name: "unio2net"
-      num_blocks: 1  # 1
-      num_layers: 9  # 9
-      hidden_dim: 128  # 128
+      num_blocks: 1
+      num_layers: 9
+      hidden_dim: 128
       n_heads: 16
       edge_feat_dim: 4  # edge type feat
       num_r_gaussian: 20
-      knn: 32 # 32, 48
+      knn: 32
       num_node_types: 8
       act_fn: relu
       norm: True

@@ -118,13 +118,6 @@ class DockingTestCallback(Callback):
             if not validity or not complete:
                 print('validity', validity, 'complete', complete)
                 continue
-                        
-            # ligand_filename = graph.ligand_filename
-            # ligand_dir = os.path.dirname(ligand_filename)
-            # ligand_fn = os.path.basename(ligand_filename)
-            # protein_fn = os.path.join(ligand_dir, ligand_fn[:10] + '.pdb')
-    
-            # print(json.dumps(chem_results, indent=4, cls=NpEncoder))
 
             out_fn = os.path.join(path, f'{idx}.sdf')
             with Chem.SDWriter(out_fn) as w:
