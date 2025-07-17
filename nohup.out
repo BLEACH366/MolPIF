@@ -1,8 +1,0 @@
-/opt/miniconda3/envs/cbgbench_copy1/lib/python3.11/site-packages/MDAnalysis/topology/tables.py:52: DeprecationWarning: Deprecated in version 2.8.0
-MDAnalysis.topology.tables has been moved to MDAnalysis.guesser.tables. This import point will be removed in MDAnalysis version 3.0.0
-  warnings.warn(wmsg, category=DeprecationWarning)
-Traceback (most recent call last):
-  File "/data1/jinyaowei/MolPIF/eval_generated.py", line 14, in <module>
-    path = path + '/' + os.path.listdir(path)[0]
-                        ^^^^^^^^^^^^^^^
-AttributeError: module 'posixpath' has no attribute 'listdir'. Did you mean: 'isdir'?
