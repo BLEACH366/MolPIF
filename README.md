@@ -16,7 +16,6 @@ Technical details and evaluation results are provided in our paper:
 - [MolPIF](#molpif)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
-      - [(tips:The environment setup is consistent with that of MolCRAFT)](#tipsthe-environment-setup-is-consistent-with-that-of-molcraft)
   - [Prepare Dataset](#prepare-dataset)
   - [Model weights](#model-weights)
   - [Training](#training)
@@ -103,6 +102,7 @@ And you will get the results in `$out_fn`. ($attachment_atoms is used to specify
 
 ## Evaluation
 For regular properties (vina score, QED, SA, SE, etc), it is calculated upon sampling. The other evaluation procedure is the same as [MolCRAFT](https://github.com/AlgoMole/MolCRAFT) and [CBGBench](https://github.com/EDAPINENUT/CBGBench/tree/7a34993a8033b0a344ce24cb7c8fb40e5cb73b65); please refer to them for details. For tsne evaluation, you can use `./test/morgan_tsne.py`. For toy dataset evaluation, you can refer to `./toy/`.
+
 Generated results `MolPIF_vina_docked.pt`, `MolPIF_metrics.json` and `MolPIF_geom.xlsx` can be downloaded from [Google Drive](https://drive.google.com/drive/folders/1VBGnHyThNHpdaLgppOeKCKomwfL6oXde)
 
 ## License
