@@ -97,7 +97,7 @@ To generate molecules for lead optimization task targeting specified protein poc
 ```
 python sample_for_pocket.py --protein_path $protein_path --ligand_path $ligand_path --ckpt_path $ ckpt_path --out_fn $out_fn --fix_index $fix_index --attachment_atoms $attachment_atoms --min_add_num $min_add_num  
 ```
-And you will get the results in `$out_fn`. ($attachment_atoms is used to specify the anchor, and remove atoms added at undesired positions)
+And you will get the results in `$out_fn`. (`$attachment_atoms` is used to specify the anchor, and remove atoms added at undesired positions)
 
 
 ## Evaluation
