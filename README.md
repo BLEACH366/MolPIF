@@ -3,7 +3,7 @@
 MolPIF is a Parameter Interpolation Flow model for molecule generation. PIF is a novel generative modeling framework proposed in this work. MolPIF supports pocket-specific molecule generation for de novo and lead optimization tasks.
 
 Technical details and evaluation results are provided in our paper:
-* [MolPIF: A Parameter Interpolation Flow Model for Molecule Generation](Coming soon)
+* [MolPIF: A Parameter Interpolation Flow Model for Molecule Generation](http://arxiv.org/abs/2507.13762)
 
 
 <p align="center">
@@ -13,14 +13,17 @@ Technical details and evaluation results are provided in our paper:
 
 
 ## Table of Contents
-1. [Installation](#Installation)
-2. [Prepare Dataset](#Prepare-Dataset)
-3. [Model weights](#Model-weights)
-4. [Training](#Training)
-5. [Inference](#Inference)
-6. [Evaluation](#Evaluation)
-7. [License](#License)
-8. [Citation](#Citation)
+- [MolPIF](#molpif)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+      - [(tips:The environment setup is consistent with that of MolCRAFT)](#tipsthe-environment-setup-is-consistent-with-that-of-molcraft)
+  - [Prepare Dataset](#prepare-dataset)
+  - [Model weights](#model-weights)
+  - [Training](#training)
+  - [Inference](#inference)
+  - [Evaluation](#evaluation)
+  - [License](#license)
+  - [Citation](#citation)
 
 
 ## Installation
@@ -91,15 +94,15 @@ python sample_for_pocket.py --protein_path $protein_path --ligand_path $ligand_p
 ```
 And you will get the results in `$out_fn`.
 
-To generate molecules for lead optimization task targeting specified protein pocket, you need to specify an additional parameter `fix_index` to indicate the indices of the fixed atoms for the ligand, which can be determined using `./test/get_ligand_index.py`. Then run:
+To generate molecules for lead optimization task targeting specified protein pocket (recommend using `pretrained_lead.ckpt`, which is trained with a larger $Pm$ and $Pam$), you need to specify an additional parameter `fix_index` to indicate the indices of the fixed atoms for the ligand, which can be determined using `./test/get_ligand_index.py`. Then run:
 ```
-python sample_for_pocket.py --protein_path $protein_path --ligand_path $ligand_path --ckpt_path $ ckpt_path --out_fn $out_fn --fix_index $fix_index
+python sample_for_pocket.py --protein_path $protein_path --ligand_path $ligand_path --ckpt_path $ ckpt_path --out_fn $out_fn --fix_index $fix_index --attachment_atoms $attachment_atoms --min_add_num $min_add_num  
 ```
-And you will get the results in `$out_fn`. Since the current generation results do not specify anchor points, it is necessary to use `./test/frag_part_filter.py` to remove atoms added at undesired positions and restore the bonds of the fixed fragment.
+And you will get the results in `$out_fn`. ($attachment_atoms is used to specify the anchor, and remove atoms added at undesired positions)
 
 
 ## Evaluation
-The evaluation procedure is the same as [MolCRAFT](https://github.com/AlgoMole/MolCRAFT) and [CBGBench](https://github.com/EDAPINENUT/CBGBench/tree/7a34993a8033b0a344ce24cb7c8fb40e5cb73b65); please refer to them for details.
+For regular properties (vina score, QED, SA, SE, etc), it is calculated upon sampling. The other evaluation procedure is the same as [MolCRAFT](https://github.com/AlgoMole/MolCRAFT) and [CBGBench](https://github.com/EDAPINENUT/CBGBench/tree/7a34993a8033b0a344ce24cb7c8fb40e5cb73b65); please refer to them for details. For tsne evaluation, you can use `./test/morgan_tsne.py`. For toy dataset evaluation, you can refer to `./toy/`.
 Generated results `MolPIF_vina_docked.pt`, `MolPIF_metrics.json` and `MolPIF_geom.xlsx` can be downloaded from [Google Drive](https://drive.google.com/drive/folders/1VBGnHyThNHpdaLgppOeKCKomwfL6oXde)
 
 ## License
@@ -108,5 +111,10 @@ This project is licensed under the terms of the GPL-3.0 license.
 
 ## Citation
 ```
-coming soon
+@article{jin2025molpif,
+  title={MolPIF: A Parameter Interpolation Flow Model for Molecule Generation},
+  author={Yaowei Jin, Junjie Wang, Wenkai Xiang, Duanhua Cao, Dan Teng, Zhehuan Fan, Jiacheng Xiong, Xia Sheng, Chuanlong Zeng, Mingyue Zheng, Qian Shi},
+  journal={arxiv},
+  year={2025}
+}
 ```

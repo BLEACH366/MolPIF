@@ -21,6 +21,7 @@ import core.utils.transforms as trans
 from core.datasets.utils import PDBProtein, parse_sdf_file
 from core.datasets.pl_data import ProteinLigandData, torchify_dict
 from core.datasets.pl_data import FOLLOW_BATCH
+from core.utils.frag_part_filter_func import modify_scaffold
 
 import pytorch_lightning as pl
 
@@ -243,15 +244,18 @@ class Metrics:
 
         return pose_check_results
     
-    def evaluate(self):
+    def evaluate(self, use_dock=True):
         chem_results_total = defaultdict(list)
         dicts = []
         for sdf_file in os.listdir(self.ligand_fn):
             if not sdf_file.endswith('.sdf'):
                 continue
             mol = Chem.SDMolSupplier(os.path.join(self.ligand_fn,sdf_file), removeHs=False)[0]
-        
-            chem_results = self.vina_dock(mol)
+
+            if use_dock:
+                chem_results = self.vina_dock(mol)
+            else:
+                chem_results = {}
             pose_check_results = self.pose_check(mol)
             chem_results.update(pose_check_results)
             chem_results['filename'] = sdf_file
@@ -273,20 +277,43 @@ class NpEncoder(json.JSONEncoder):
             return obj.tolist()
         return super(NpEncoder, self).default(obj)
 
+def get_submol(mol, atom_idxs):
+    Chem.Kekulize(mol, clearAromaticFlags=True)
+
+    edge_indices = []
+    for b in mol.GetBonds():
+        a0 = b.GetBeginAtomIdx()
+        a1 = b.GetEndAtomIdx()
+        if a0 in atom_idxs and a1 in atom_idxs:
+            edge_indices.append(b.GetIdx())
+
+    # 提取子结构 Mol
+    submol = Chem.PathToSubmol(mol, edge_indices)
+    submol.UpdatePropertyCache()
+    Chem.SanitizeMol(submol)
+    return submol
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # meta
-    parser.add_argument("--protein_path", type=str, default="./examples/1umd/1umd_B_rec.pdb")
-    parser.add_argument("--ligand_path", type=str, default="./examples/1umd/1umd_B_rec_1umb_tdp_lig_tt_docked_1.sdf")
-    parser.add_argument("--ckpt_path", type=str, default="./logs/interpolation_para_randn_flow_uni_fulltype_geo_0009_noEMA2_pf/checkpoints/epoch12-val_loss12.04-mol_stable0.98-complete0.95-vina_score-7.27.ckpt")
-    parser.add_argument("--num_samples", type=int, default=100)
+    parser.add_argument("--protein_path", type=str, default="./examples/7rbt/new_mol/7rbt_protein.pdb")
+    parser.add_argument("--ligand_path", type=str, default="./examples/7rbt/new_mol/new_mol_O.sdf")
+    # parser.add_argument("--ckpt_path", type=str, default="./logs/interpolation_para_randn_flow_uni_fulltype_geo_0009_noEMA2_pf/checkpoints/epoch12-val_loss12.04-mol_stable0.98-complete0.95-vina_score-7.27.ckpt")
+    parser.add_argument("--ckpt_path", type=str, default="./logs/interpolation_fulltype_gamma0009_pf05/checkpoints/epoch13-val_loss8.96-mol_stable0.98-complete0.97-vina_scorenan.ckpt")
+    parser.add_argument("--num_samples", type=int, default=10000)
     parser.add_argument("--sample_steps", type=int, default=100)
-    parser.add_argument("--sample_num_atoms", type=str, default="ref")  # "ref", "prior"
-    parser.add_argument("--fix_index", type=int, nargs='+', default=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22])
-    parser.add_argument("--out_fn", type=str, default="./examples/1umd/output_ref")
+    parser.add_argument("--sample_num_atoms", type=str, default="ref")  # ["ref","prior"]. "prior" for denovo only for now
+    parser.add_argument("--fix_index", type=int, nargs='+', default=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36])
+    parser.add_argument("--out_fn", type=str, default="./examples/7rbt/new_mol/output_O")
     parser.add_argument("--cfg_path", type=str, default=None)
+
+    parser.add_argument("--use_frag_part_filter", type=lambda x: x.lower() == 'true', default=True)
+    parser.add_argument("--attachment_atoms", type=int, nargs='+',default=[0])
+    parser.add_argument("--min_add_num", type=int, default=8)
+    parser.add_argument("--frag_output_dir", type=str, default=None)
+
+    parser.add_argument("--use_dock", type=lambda x: x.lower() == 'true', default=False)
 
     args = parser.parse_args()
 
@@ -300,22 +327,35 @@ if __name__ == '__main__':
     out_fn = args.out_fn
     cfg_path = args.cfg_path
 
+    use_frag_part_filter = args.use_frag_part_filter
+    attachment_atoms = args.attachment_atoms
+    min_add_num = args.min_add_num
+    frag_output_dir = args.frag_output_dir
+
+    use_dock = args.use_dock
+
 
     call(protein_path, ligand_path, ckpt_path=ckpt_path, num_samples=num_samples, sample_steps=sample_steps,
-         sample_num_atoms=sample_num_atoms, fix_index=fix_index, out_fn=out_fn, cfg_path=cfg_path)
+         sample_num_atoms=sample_num_atoms, fix_index=fix_index, out_fn=out_fn, cfg_path=cfg_path, seed=1234)
 
+    scaffold_mol = get_submol(Chem.SDMolSupplier(ligand_path)[0],fix_index)
+    if use_frag_part_filter:
+        if not frag_output_dir:
+            frag_output_dir = os.path.join(out_fn, 'frag_part_filter')
+        modify_scaffold(out_fn, scaffold_mol, attachment_atoms, min_add_num, frag_output_dir)
 
-    metrics = Metrics(protein_path, ligand_path, out_fn).evaluate()
+    if use_dock:
+        metrics = Metrics(protein_path, ligand_path, out_fn).evaluate(use_dock=False)
 
-    num_rows = len(next(iter(metrics.values())))  # 任意一列的长度
-    # 获取字段名（列名）
-    fieldnames = list(metrics.keys())
-    # 组合为一行一行的数据（按行取出）
-    rows = [ {key: metrics[key][i] for key in fieldnames} for i in range(num_rows) ]
+        num_rows = len(next(iter(metrics.values())))  # 任意一列的长度
+        # 获取字段名（列名）
+        fieldnames = list(metrics.keys())
+        # 组合为一行一行的数据（按行取出）
+        rows = [ {key: metrics[key][i] for key in fieldnames} for i in range(num_rows) ]
 
-    # 写入 CSV
-    with open(os.path.join(out_fn, 'metrics.csv'), mode='w', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
+        # 写入 CSV
+        with open(os.path.join(out_fn, 'metrics.csv'), mode='w', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
 
