@@ -297,23 +297,23 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # meta
-    parser.add_argument("--protein_path", type=str, default="./examples/7rbt/new_mol/7rbt_protein.pdb")
-    parser.add_argument("--ligand_path", type=str, default="./examples/7rbt/new_mol/new_mol_O.sdf")
+    parser.add_argument("--protein_path", type=str, default="./example/AMY3_pose2_protein.pdb")
+    parser.add_argument("--ligand_path", type=str, default="./example/AMY3_pose2_ligand_modify2.sdf")
     # parser.add_argument("--ckpt_path", type=str, default="./logs/interpolation_para_randn_flow_uni_fulltype_geo_0009_noEMA2_pf/checkpoints/epoch12-val_loss12.04-mol_stable0.98-complete0.95-vina_score-7.27.ckpt")
     parser.add_argument("--ckpt_path", type=str, default="./logs/interpolation_fulltype_gamma0009_pf05/checkpoints/epoch13-val_loss8.96-mol_stable0.98-complete0.97-vina_scorenan.ckpt")
-    parser.add_argument("--num_samples", type=int, default=10000)
+    parser.add_argument("--num_samples", type=int, default=10)
     parser.add_argument("--sample_steps", type=int, default=100)
     parser.add_argument("--sample_num_atoms", type=str, default="ref")  # ["ref","prior"]. "prior" for denovo only for now
-    parser.add_argument("--fix_index", type=int, nargs='+', default=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36])
-    parser.add_argument("--out_fn", type=str, default="./examples/7rbt/new_mol/output_O")
+    parser.add_argument("--fix_index", type=int, nargs='+', default=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45])
+    parser.add_argument("--out_fn", type=str, default="./example/output_test")
     parser.add_argument("--cfg_path", type=str, default=None)
 
     parser.add_argument("--use_frag_part_filter", type=lambda x: x.lower() == 'true', default=True)
-    parser.add_argument("--attachment_atoms", type=int, nargs='+',default=[0])
-    parser.add_argument("--min_add_num", type=int, default=8)
+    parser.add_argument("--attachment_atoms", type=int, nargs='+',default=[21])
+    parser.add_argument("--min_add_num", type=int, default=5)
     parser.add_argument("--frag_output_dir", type=str, default=None)
 
-    parser.add_argument("--use_dock", type=lambda x: x.lower() == 'true', default=False)
+    parser.add_argument("--use_dock", type=lambda x: x.lower() == 'true', default=True)
 
     args = parser.parse_args()
 
@@ -338,14 +338,15 @@ if __name__ == '__main__':
     call(protein_path, ligand_path, ckpt_path=ckpt_path, num_samples=num_samples, sample_steps=sample_steps,
          sample_num_atoms=sample_num_atoms, fix_index=fix_index, out_fn=out_fn, cfg_path=cfg_path, seed=1234)
 
-    scaffold_mol = get_submol(Chem.SDMolSupplier(ligand_path)[0],fix_index)
     if use_frag_part_filter:
         if not frag_output_dir:
             frag_output_dir = os.path.join(out_fn, 'frag_part_filter')
+        scaffold_mol = get_submol(Chem.SDMolSupplier(ligand_path)[0],fix_index)
         modify_scaffold(out_fn, scaffold_mol, attachment_atoms, min_add_num, frag_output_dir)
+        out_fn = frag_output_dir
 
     if use_dock:
-        metrics = Metrics(protein_path, ligand_path, out_fn).evaluate(use_dock=False)
+        metrics = Metrics(protein_path, ligand_path, out_fn).evaluate()
 
         num_rows = len(next(iter(metrics.values())))  # 任意一列的长度
         # 获取字段名（列名）

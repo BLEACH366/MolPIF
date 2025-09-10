@@ -72,14 +72,20 @@ def keep_scaffold_and_groups(mol, scaffold, attachment_atoms):
                     else:
                         bond.SetBondType(bond_old.GetBondType())
 
-    # Draw.MolToFile(emol, 'test2.png')
+    # Draw.MolToFile(emol, 'test2.png', size=(1000,1000))
+    # writer = Chem.SDWriter('test2.sdf')
+    # writer.write(emol)
+    # writer.close()
 
     # 使用EditMol删除未标记的原子
     for atom_idx in reversed(range(mol.GetNumAtoms())):
         if atom_idx not in atoms_to_keep:
             emol.RemoveAtom(atom_idx)
 
-    # Draw.MolToFile(emol, 'test3.png')
+    # Draw.MolToFile(emol, 'test3.png', size=(1000,1000))
+    # writer = Chem.SDWriter('test3.sdf')
+    # writer.write(emol)
+    # writer.close()
 
     try:
         Chem.SanitizeMol(emol)

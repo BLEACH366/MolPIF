@@ -26,37 +26,10 @@ Technical details and evaluation results are provided in our paper:
 
 
 ## Installation
-#### (tips:The environment setup is consistent with that of [MolCRAFT](https://github.com/AlgoMole/MolCRAFT))
-You can build the environment through `conda env create -f environment.yml`. Here the main packages are listed:
-
-| Package           | Version   |
-|-------------------|-----------|
-| CUDA              | 11.6      |
-| NumPy             | 1.23.1    |
-| Python            | 3.9       |
-| PyTorch           | 1.12.0    |
-| PyTorch Geometric | 2.1.0     |
-| RDKit             | 2023.9.5  |
-
-For evaluation, you will need to install `vina` (affinity), `posecheck` (clash, strain energy, and key interactions), and `spyrmsd` (rmsd).
-
-```bash
-# for vina docking
-pip install meeko==0.1.dev3 scipy pdb2pqr vina==1.2.2 
-python -m pip install git+https://github.com/Valdes-Tresanco-MS/AutoDockTools_py3
-
-# for posecheck evaluation
-git clone https://github.com/cch1999/posecheck.git
-cd posecheck
-git checkout 57a1938  # the calculation of strain energy used in our paper
-pip install -e .
-pip install -r requirements.txt
-conda install -c mx reduce
-
-# for spyrmsd
-conda install spyrmsd -c conda-forge
+You can build the environment (Default CUDA version is 12.4) using:
 ```
-
+./setup_env.sh
+```
 To activate the environment, run:
 ```
 conda activate MolPIF
@@ -72,10 +45,13 @@ To train the model from scratch, download the lmdb file and split file into data
 To evaluate the model on the test set, download _and_ unzip the `test_set.zip` into `./data` folder. It includes the original PDB files that will be used in Vina Docking.
 
 
-
-
 ## Model weights
-Download the pretrained checkpoint and config from [Google Drive](https://drive.google.com/drive/folders/1VBGnHyThNHpdaLgppOeKCKomwfL6oXde) whose filenames are `pretrained.ckpt` and `config.yaml`, and put it into `./weights` folder. You can use the pretrained weight for inference.
+Download the pretrained checkpoint and config from [Google Drive](https://drive.google.com/drive/folders/1VBGnHyThNHpdaLgppOeKCKomwfL6oXde) whose filenames are `pretrained.ckpt` and `config.yaml`, and put it into `./weights` folder as follows. You can use the pretrained weight for inference.
+- 📂 weights
+    - 📂 checkpoints
+        - 📄 pretrained.ckpt
+    - ⚙️ config.yaml
+
 
 
 ## Training
@@ -87,6 +63,13 @@ And you will get the intermediate results and the checkpoints in `./logs`.
 
 
 ## Inference
+As an example (Make sure checkpoints are put in the right folder), you can run :
+```
+python sample_for_pocket.py --ckpt_path weights/checkpoints/pretrained.ckpt
+```
+And you can get results in `./example/output_test/frag_part_filter`
+&nbsp;
+
 To generate molecules for de novo task targeting specified protein pocket, run:
 ```
 python sample_for_pocket.py --protein_path $protein_path --ligand_path $ligand_path --ckpt_path $ ckpt_path --out_fn $out_fn
