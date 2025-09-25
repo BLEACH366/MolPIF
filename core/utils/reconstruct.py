@@ -7,6 +7,7 @@ https://github.com/mattragoza/liGAN/blob/master/LICENSE
 import itertools
 
 import numpy as np
+from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit import Geometry
 from openbabel import openbabel as ob
@@ -477,7 +478,7 @@ def postprocess_rd_mol_2(rdmol):
     return rdmol
 
 
-def reconstruct_from_generated(xyz, atomic_nums, aromatic=None, basic_mode=True):
+def reconstruct_from_generated_old(xyz, atomic_nums, aromatic=None, basic_mode=True):
     """
     will utilize data.ligand_pos, data.ligand_element, data.ligand_atom_feature_full to reconstruct mol
     """
@@ -547,4 +548,64 @@ def reconstruct_from_generated(xyz, atomic_nums, aromatic=None, basic_mode=True)
     except:
         raise MolReconError()
 
+    return rd_mol
+
+def reconstruct_from_generated(xyz, atomic_nums, aromatic=None, basic_mode=True):
+    if basic_mode:
+        indicators = None
+    else:
+        indicators = aromatic
+    ob_mol = ob.OBMol()
+
+    # 添加原子
+    atoms = []
+    for num, coord in zip(atomic_nums, xyz):
+        atom = ob_mol.NewAtom()
+        atom.SetAtomicNum(int(num))
+        atom.SetVector(coord[0], coord[1], coord[2])
+        atoms.append(atom)
+
+    # 成键
+    ob_mol.ConnectTheDots()
+    ob_mol.PerceiveBondOrders()
+    ob_mol.SetDimension(3)
+
+    ob_mol.DeleteHydrogens()
+    n_atoms = ob_mol.NumAtoms()
+    rd_mol = AllChem.RWMol()
+    rd_conf = AllChem.Conformer(n_atoms)
+
+    for ob_atom in ob.OBMolAtomIter(ob_mol):
+        rd_atom = AllChem.Atom(ob_atom.GetAtomicNum())
+        # TODO copy format charge
+        if ob_atom.IsAromatic() and ob_atom.IsInRing() and ob_atom.MemberOfRingSize() <= 6:
+            # don't commit to being aromatic unless rdkit will be okay with the ring status
+            # (this can happen if the atoms aren't fit well enough)
+            rd_atom.SetIsAromatic(True)
+        i = rd_mol.AddAtom(rd_atom)
+        ob_coords = ob_atom.GetVector()
+        x = ob_coords.GetX()
+        y = ob_coords.GetY()
+        z = ob_coords.GetZ()
+        rd_coords = Geometry.Point3D(x, y, z)
+        rd_conf.SetAtomPosition(i, rd_coords)
+
+    rd_mol.AddConformer(rd_conf)
+
+    for ob_bond in ob.OBMolBondIter(ob_mol):
+        i = ob_bond.GetBeginAtomIdx() - 1
+        j = ob_bond.GetEndAtomIdx() - 1
+        bond_order = ob_bond.GetBondOrder()
+        if bond_order == 1:
+            rd_mol.AddBond(i, j, AllChem.BondType.SINGLE)
+        elif bond_order == 2:
+            rd_mol.AddBond(i, j, AllChem.BondType.DOUBLE)
+        elif bond_order == 3:
+            rd_mol.AddBond(i, j, AllChem.BondType.TRIPLE)
+        else:
+            raise Exception('unknown bond order {}'.format(bond_order))
+
+        if ob_bond.IsAromatic():
+            bond = rd_mol.GetBondBetweenAtoms(i, j)
+            bond.SetIsAromatic(True)
     return rd_mol

@@ -313,7 +313,7 @@ if __name__ == '__main__':
     parser.add_argument("--min_add_num", type=int, default=5)
     parser.add_argument("--frag_output_dir", type=str, default=None)
 
-    parser.add_argument("--use_dock", type=lambda x: x.lower() == 'true', default=True)
+    parser.add_argument("--use_dock", type=lambda x: x.lower() == 'true', default=False)
 
     args = parser.parse_args()
 
