@@ -95,9 +95,16 @@ This project is licensed under the terms of the GPL-3.0 license.
 ## Citation
 ```
 @article{jin2025molpif,
-  title={MolPIF: A Parameter Interpolation Flow Model for Molecule Generation},
-  author={Yaowei Jin, Junjie Wang, Wenkai Xiang, Duanhua Cao, Dan Teng, Zhehuan Fan, Jiacheng Xiong, Xia Sheng, Chuanlong Zeng, Mingyue Zheng, Qian Shi},
-  journal={arxiv},
-  year={2025}
+  author = {Jin, Yaowei and Wang, Junjie and Tang, Yufan and Xiang, Wenkai and Cao, Duanhua and Teng, Dan and Fan, Zhehuan and Xiong, Jiacheng and Sheng, Xia and Zeng, Chuanlong and An, Duo and Zheng, Mingyue and Zheng, Shuangjia and Shi, Qian},
+  title = {MolPIF: a parameter interpolation flow model for molecule generation},
+  journal = {Bioinformatics},
+  volume = {42},
+  number = {6},
+  pages = {btag323},
+  year = {2026},
+  month = {06},
+  issn = {1367-4811},
+  doi = {10.1093/bioinformatics/btag323},
+  url = {https://doi.org/10.1093/bioinformatics/btag323}
 }
 ```
